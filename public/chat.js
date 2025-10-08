@@ -1,14 +1,12 @@
 /**
- * LLM Chat App Frontend - HayvanSahipleri.com uyumlu
+ * HayvanSahipleri.com LLM Chat Frontend - Eksiksiz ve Mavi Tema
  */
 
-// DOM elemanları
 const chatMessages = document.getElementById("chat-messages");
 const userInput = document.getElementById("user-input");
 const sendButton = document.getElementById("send-button");
 const typingIndicator = document.getElementById("typing-indicator");
 
-// Chat durumu
 let chatHistory = [
   {
     role: "assistant",
@@ -18,13 +16,13 @@ let chatHistory = [
 ];
 let isProcessing = false;
 
-// Textarea otomatik boyutlandırma
+// Kullanıcı textarea otomatik boyutlandırma
 userInput.addEventListener("input", function () {
   this.style.height = "auto";
   this.style.height = this.scrollHeight + "px";
 });
 
-// Enter tuşu ile gönder (Shift + Enter ile alt satır)
+// Enter tuşu ile gönder (Shift+Enter alt satır)
 userInput.addEventListener("keydown", function (e) {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
@@ -32,10 +30,10 @@ userInput.addEventListener("keydown", function (e) {
   }
 });
 
-// Gönder butonu
+// Send butonu
 sendButton.addEventListener("click", sendMessage);
 
-// Sistem prompt
+// Sistem prompt (forum temalı)
 const systemPrompt = `
 Sen HayvanSahipleri.com forumu için yardımcı bir asistansın.
 Cevapların net, kullanıcı dostu ve güvenli olmalı.
@@ -50,28 +48,20 @@ async function sendMessage() {
   userInput.disabled = true;
   sendButton.disabled = true;
 
-  // Kullanıcı mesajını ekle
   addMessageToChat("user", message);
-
-  // Input temizle
   userInput.value = "";
   userInput.style.height = "auto";
 
-  // Typing indicator göster
   typingIndicator.classList.add("visible");
-
-  // Mesaj geçmişine ekle
   chatHistory.push({ role: "user", content: message });
 
   try {
-    // Asistan mesaj elemanı oluştur
     const assistantEl = document.createElement("div");
     assistantEl.className = "message assistant-message";
     assistantEl.innerHTML = "<p></p>";
     chatMessages.appendChild(assistantEl);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // API’ye istek gönder
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -106,7 +96,6 @@ async function sendMessage() {
       }
     }
 
-    // Tamamlanmış mesajı geçmişe ekle
     chatHistory.push({ role: "assistant", content: aiMessage });
   } catch (error) {
     console.error(error);
@@ -123,7 +112,6 @@ async function sendMessage() {
   }
 }
 
-// Mesaj ekleme yardımcı fonksiyonu
 function addMessageToChat(role, content) {
   const messageEl = document.createElement("div");
   messageEl.className = `message ${role}-message`;
