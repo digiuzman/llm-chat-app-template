@@ -1,32 +1,30 @@
 /**
- * LLM Chat App Frontend
- *
- * Handles the chat UI interactions and communication with the backend API.
+ * LLM Chat App Frontend - HayvanSahipleri.com uyumlu
  */
 
-// DOM elements
+// DOM elemanları
 const chatMessages = document.getElementById("chat-messages");
 const userInput = document.getElementById("user-input");
 const sendButton = document.getElementById("send-button");
 const typingIndicator = document.getElementById("typing-indicator");
 
-// Chat state
+// Chat durumu
 let chatHistory = [
   {
     role: "assistant",
     content:
-      "Hello! I'm an LLM chat app powered by Cloudflare Workers AI. How can I help you today?",
+      "Merhaba! HayvanSahipleri.com Yapay Zeka Asistanına hoş geldiniz. Sorularınızı buradan sorabilirsiniz.",
   },
 ];
 let isProcessing = false;
 
-// Auto-resize textarea as user types
+// Textarea otomatik boyutlandırma
 userInput.addEventListener("input", function () {
   this.style.height = "auto";
   this.style.height = this.scrollHeight + "px";
 });
 
-// Send message on Enter (without Shift)
+// Enter tuşu ile gönder (Shift + Enter ile alt satır)
 userInput.addEventListener("keydown", function (e) {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
@@ -34,109 +32,90 @@ userInput.addEventListener("keydown", function (e) {
   }
 });
 
-// Send button click handler
+// Gönder butonu
 sendButton.addEventListener("click", sendMessage);
 
-/**
- * Sends a message to the chat API and processes the response
- */
+// Sistem prompt
+const systemPrompt = `
+Sen HayvanSahipleri.com forumu için yardımcı bir asistansın.
+Cevapların net, kullanıcı dostu ve güvenli olmalı.
+Köpek, kedi ve diğer evcil hayvan konularında bilgi ver.
+`;
+
 async function sendMessage() {
   const message = userInput.value.trim();
+  if (!message || isProcessing) return;
 
-  // Don't send empty messages
-  if (message === "" || isProcessing) return;
-
-  // Disable input while processing
   isProcessing = true;
   userInput.disabled = true;
   sendButton.disabled = true;
 
-  // Add user message to chat
+  // Kullanıcı mesajını ekle
   addMessageToChat("user", message);
 
-  // Clear input
+  // Input temizle
   userInput.value = "";
   userInput.style.height = "auto";
 
-  // Show typing indicator
+  // Typing indicator göster
   typingIndicator.classList.add("visible");
 
-  // Add message to history
+  // Mesaj geçmişine ekle
   chatHistory.push({ role: "user", content: message });
 
   try {
-    // Create new assistant response element
-    const assistantMessageEl = document.createElement("div");
-    assistantMessageEl.className = "message assistant-message";
-    assistantMessageEl.innerHTML = "<p></p>";
-    chatMessages.appendChild(assistantMessageEl);
-
-    // Scroll to bottom
+    // Asistan mesaj elemanı oluştur
+    const assistantEl = document.createElement("div");
+    assistantEl.className = "message assistant-message";
+    assistantEl.innerHTML = "<p></p>";
+    chatMessages.appendChild(assistantEl);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // Send request to API
+    // API’ye istek gönder
     const response = await fetch("/api/chat", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        messages: chatHistory,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: chatHistory, system: systemPrompt }),
     });
 
-    // Handle errors
-    if (!response.ok) {
-      throw new Error("Failed to get response");
-    }
+    if (!response.ok) throw new Error("Sunucu hatası");
 
-    // Process streaming response
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
-    let responseText = "";
+    let aiMessage = "";
 
     while (true) {
       const { done, value } = await reader.read();
+      if (done) break;
 
-      if (done) {
-        break;
-      }
-
-      // Decode chunk
       const chunk = decoder.decode(value, { stream: true });
-
-      // Process SSE format
       const lines = chunk.split("\n");
+
       for (const line of lines) {
+        if (!line.trim()) continue;
         try {
           const jsonData = JSON.parse(line);
           if (jsonData.response) {
-            // Append new content to existing text
-            responseText += jsonData.response;
-            assistantMessageEl.querySelector("p").textContent = responseText;
-
-            // Scroll to bottom
+            aiMessage += jsonData.response;
+            assistantEl.querySelector("p").textContent = aiMessage;
             chatMessages.scrollTop = chatMessages.scrollHeight;
           }
         } catch (e) {
-          console.error("Error parsing JSON:", e);
+          console.error("JSON parse hatası:", e);
         }
       }
     }
 
-    // Add completed response to chat history
-    chatHistory.push({ role: "assistant", content: responseText });
+    // Tamamlanmış mesajı geçmişe ekle
+    chatHistory.push({ role: "assistant", content: aiMessage });
   } catch (error) {
-    console.error("Error:", error);
+    console.error(error);
     addMessageToChat(
       "assistant",
-      "Sorry, there was an error processing your request.",
+      "Üzgünüz, isteğiniz işlenirken bir hata oluştu."
     );
   } finally {
-    // Hide typing indicator
     typingIndicator.classList.remove("visible");
-
-    // Re-enable input
     isProcessing = false;
     userInput.disabled = false;
     sendButton.disabled = false;
@@ -144,15 +123,12 @@ async function sendMessage() {
   }
 }
 
-/**
- * Helper function to add message to chat
- */
+// Mesaj ekleme yardımcı fonksiyonu
 function addMessageToChat(role, content) {
   const messageEl = document.createElement("div");
   messageEl.className = `message ${role}-message`;
   messageEl.innerHTML = `<p>${content}</p>`;
   chatMessages.appendChild(messageEl);
-
-  // Scroll to bottom
   chatMessages.scrollTop = chatMessages.scrollHeight;
+  return messageEl;
 }
