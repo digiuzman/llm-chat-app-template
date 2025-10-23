@@ -7,8 +7,9 @@ const userInput = document.getElementById("user-input");
 const sendButton = document.getElementById("send-button");
 const typingIndicator = document.getElementById("typing-indicator");
 
-// Tema kontrolü: body'de "darkTheme" sınıfı varsa koyu tema
-const isDarkTheme = document.body.classList.contains("darkTheme");
+// Koyu tema tespiti
+const isDarkTheme = document.documentElement.getAttribute("data-color-scheme") === "dark";
+
 
 let chatHistory = [
   {
