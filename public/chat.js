@@ -10,6 +10,13 @@ const typingIndicator = document.getElementById("typing-indicator");
 // Koyu tema tespiti
 const isDarkTheme = document.documentElement.getAttribute("data-color-scheme") === "dark";
 
+if (isDarkTheme) {
+  document.body.classList.add("darkTheme");
+} else {
+  document.body.classList.remove("darkTheme");
+}
+
+
 
 let chatHistory = [
   {
