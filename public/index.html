@@ -6,14 +6,21 @@
     <title>HayvanSahipleri - Yapay Zeka Chat</title>
     <style>
       :root {
-        --primary-color: #1e3a8a;       /* forum mavi ton */
-        --primary-hover: #2563eb;       /* hover daha canlı mavi */
+        --primary-color: #1e3a8a;       
+        --primary-hover: #2563eb;       
         --light-bg: #f9fafb;
+        --dark-bg: #111827;
         --border-color: #cbd5e1;
         --text-color: #1f2937;
         --text-light: #6b7280;
-        --user-msg-bg: #e0f2fe;         /* kullanıcı mesaj arka planı */
-        --assistant-msg-bg: #f3f4f6;    /* asistan mesaj arka planı */
+        --user-msg-bg: #e0f2fe;         
+        --assistant-msg-bg: #f3f4f6;    
+        --user-msg-bg-dark: #2c2c2c;
+        --assistant-msg-bg-dark: #1f1f1f;
+        --text-color-dark: #e0e0e0;
+        --input-bg-dark: #1f1f1f;
+        --button-bg-dark: #3a3a3a;
+        --button-color-dark: #e0e0e0;
       }
 
       * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,6 +33,12 @@
         margin: 0 auto;
         padding: 1rem;
         background-color: var(--light-bg);
+      }
+
+      /* Koyu tema için body class eklenirse */
+      body.darkTheme {
+        background-color: var(--dark-bg);
+        color: var(--text-color-dark);
       }
 
       header {
@@ -49,11 +62,20 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       }
 
+      body.darkTheme .chat-container {
+        background-color: var(--dark-bg);
+        border-color: #333;
+      }
+
       .chat-messages {
         flex: 1;
         overflow-y: auto;
         padding: 1rem;
         background-color: var(--light-bg);
+      }
+
+      body.darkTheme .chat-messages {
+        background-color: var(--dark-bg);
       }
 
       .message {
@@ -70,9 +92,19 @@
         margin-left: auto;
       }
 
+      body.darkTheme .user-message {
+        background-color: var(--user-msg-bg-dark);
+        color: var(--text-color-dark);
+      }
+
       .assistant-message {
         background-color: var(--assistant-msg-bg);
         align-self: flex-start;
+      }
+
+      body.darkTheme .assistant-message {
+        background-color: var(--assistant-msg-bg-dark);
+        color: var(--text-color-dark);
       }
 
       .message-input {
@@ -80,6 +112,11 @@
         padding: 0.75rem;
         border-top: 1px solid var(--border-color);
         background-color: #fff;
+      }
+
+      body.darkTheme .message-input {
+        background-color: var(--input-bg-dark);
+        border-color: #333;
       }
 
       #user-input {
@@ -90,6 +127,14 @@
         font-family: inherit;
         resize: none;
         min-height: 44px;
+        background-color: #fff;
+        color: var(--text-color);
+      }
+
+      body.darkTheme #user-input {
+        background-color: var(--input-bg-dark);
+        color: var(--text-color-dark);
+        border-color: #333;
       }
 
       #send-button {
@@ -101,6 +146,11 @@
         border-radius: 4px;
         cursor: pointer;
         transition: background-color 0.2s;
+      }
+
+      body.darkTheme #send-button {
+        background-color: var(--button-bg-dark);
+        color: var(--button-color-dark);
       }
 
       #send-button:hover { background-color: var(--primary-hover); }
@@ -128,7 +178,7 @@
       }
     </style>
   </head>
-  <body>
+  <body class="">
     <header>
       <h1>Yapay Zekaya Sor</h1>
       <p>HayvanSahipleri.com AI Asistan</p>
