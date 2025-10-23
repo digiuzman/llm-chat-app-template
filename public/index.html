@@ -6,15 +6,15 @@
     <title>HayvanSahipleri - Yapay Zeka Chat</title>
     <style>
       :root {
-        --primary-color: #1e3a8a;       
-        --primary-hover: #2563eb;       
+        --primary-color: #1e3a8a;
+        --primary-hover: #2563eb;
         --light-bg: #f9fafb;
         --dark-bg: #111827;
         --border-color: #cbd5e1;
         --text-color: #1f2937;
         --text-light: #6b7280;
-        --user-msg-bg: #e0f2fe;         
-        --assistant-msg-bg: #f3f4f6;    
+        --user-msg-bg: #e0f2fe;
+        --assistant-msg-bg: #f3f4f6;
         --user-msg-bg-dark: #2c2c2c;
         --assistant-msg-bg-dark: #1f1f1f;
         --text-color-dark: #e0e0e0;
@@ -35,7 +35,6 @@
         background-color: var(--light-bg);
       }
 
-      /* Koyu tema için body class eklenirse */
       body.darkTheme {
         background-color: var(--dark-bg);
         color: var(--text-color-dark);
@@ -178,7 +177,7 @@
       }
     </style>
   </head>
-  <body class="">
+  <body>
     <header>
       <h1>Yapay Zekaya Sor</h1>
       <p>HayvanSahipleri.com AI Asistan</p>
@@ -205,5 +204,14 @@
 
     <!-- Chat app script -->
     <script src="chat.js"></script>
+    <script>
+      // Dark/light temayı JS ile otomatik ekleme
+      const isDarkTheme = document.documentElement.getAttribute("data-color-scheme") === "dark";
+      if (isDarkTheme) {
+        document.body.classList.add("darkTheme");
+      } else {
+        document.body.classList.remove("darkTheme");
+      }
+    </script>
   </body>
 </html>
